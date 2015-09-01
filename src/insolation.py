@@ -6,6 +6,7 @@ def insolation(zenith, jd, height, visibility, RH, tempK, O3, alphag):
     """Computes direct and diffuse solar irradiance perpendicular to the beam,
     for a given zenith angle, Julian Day, altitude and atmospheric conditions.
 
+
     :param zenith:  Zenith angle in degrees.
     :param jd: Julian Day.
     :param height: Altitude above sea level.
