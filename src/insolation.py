@@ -1,6 +1,6 @@
 from __future__ import division
 
-from math import radians, cos, sin, exp
+from math import radians, degrees, cos, sin, exp,asin
 
 
 def jday_from_datetime(year_or_datetime,month=None,day=None,hour=12,minute=0,sec=0):
@@ -37,6 +37,55 @@ def jday_from_datetime(year_or_datetime,month=None,day=None,hour=12,minute=0,sec
     hour=hour+minute/60+sec/60
     jd=367*year - (7*(year+(month+9)//12))//4 + (275*month)//9+day+1721013.5 + hour/24
     return jd
+
+def sunposition(jd,lat,lon,timezone=0):
+    """calculate the suns position in the sky at a given time and place
+
+    :param jd: time in Julian days
+    :param lat: latitude in decimal degrees
+    :param lon: longitude in decimal degrees
+    :param timezone: Time zone, west is negative.
+    :return: azimuth and zenith angles of the sun at the given time and place
+    """
+    return
+
+
+def sunvector(jd,lat,lon,timezone=0):
+    """Calculates a unit vector in the direction of the sun from the observer position.
+    :param jd: time in Julian days
+    :param lat: latitude in decimal degrees
+    :param lon: longitude in decimal degrees
+    :param timezone: Time zone, west is negative.
+    :return: unit vector in the direction of the sun from the observer position
+    """
+    return
+
+def hourangle(jd,longitude,timezone):
+    return
+
+def declination(jd):
+    """Computes the declination of the Sun for a given Julian Day
+
+    >>> print round(declination(2457457.16667),4)
+    -4.1502
+    >>> print round(declination(2457561.06944),4)
+    23.4333
+    >>>
+    """
+    jdc=(jd - 2451545.0)/36525.0
+    sec = 21.448 - jdc*(46.8150 + jdc*(0.00059 - jdc*(0.001813)))
+    e0 = 23.0 + (26.0 + (sec/60.0))/60.0
+    oblcorr = e0 + 0.00256 * cos(radians(125.04 - 1934.136 * jdc))
+    l0 = 280.46646 + jdc * (36000.76983 + jdc*(0.0003032))
+    l0 = (l0-360*(l0//360))%360
+    gmas = 357.52911 + jdc * (35999.05029 - 0.0001537 * jdc)
+    gmas=radians(gmas)
+    seqcent = sin(gmas) * (1.914602 - jdc * (0.004817 + 0.000014 * jdc)) + \
+              sin(2*gmas) * (0.019993 - 0.000101 * jdc) + sin(3*gmas) * 0.000289
+    suntl = l0 + seqcent
+    sal = suntl - 0.00569 - 0.00478 * sin(radians(125.04 - 1934.136 * jdc))
+    delta = asin( sin(radians(oblcorr))*sin(radians(sal)) )
+    return(degrees(delta))
 
 
 def insolation(zenith, jd, height, visibility, RH, tempK, O3, alphag):
