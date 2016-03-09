@@ -1,6 +1,6 @@
 from __future__ import division
 
-from math import radians, degrees, cos, sin, tan, exp,asin,floor,pi
+from math import radians, degrees, cos, sin, tan,asin, acos,atan2, exp,floor,pi
 
 
 def jday_from_datetime(year_or_datetime,month=None,day=None,hour=12,minute=0,sec=0):
@@ -39,15 +39,24 @@ def jday_from_datetime(year_or_datetime,month=None,day=None,hour=12,minute=0,sec
     return jd
 
 def sunposition(jd,lat,lon,timezone=0):
-    """calculate the suns position in the sky at a given time and place
+    """calculate the suns position in the sky at a given time and place. No refraction, center of disc
 
     :param jd: time in Julian days
     :param lat: latitude in decimal degrees
     :param lon: longitude in decimal degrees
     :param timezone: Time zone, west is negative.
     :return: azimuth and zenith angles of the sun at the given time and place
+
+    >>> print map(lambda x:round(x,4),sunposition(2457457.16667,54,12,1))
+    [237.7328, 73.5839]
+    >>> print map(lambda x:round(x,4),sunposition(2452460,0,0,0))
+    [2.5879, 22.8911]
     """
-    return
+    sunv=sunvector(jd,lat,lon,timezone)
+    azimuth = degrees(pi - atan2(sunv[0],sunv[1]  ) )
+    zenith = degrees(acos(sunv[2]))
+
+    return (azimuth,zenith)
 
 
 def sunvector(jd,lat,lon,timezone=0):
@@ -57,8 +66,19 @@ def sunvector(jd,lat,lon,timezone=0):
     :param lon: longitude in decimal degrees
     :param timezone: Time zone, west is negative.
     :return: unit vector in the direction of the sun from the observer position
+
+    >>> print map(lambda x:round(x,4),sunvector(2457457.16667,54,12,1))
+    [-0.8111, 0.5121, 0.2826]
+    >>> print map(lambda x:round(x,4),sunvector(2457000,12,54,-8))
+    [-0.0639, 0.1867, -0.9803]
     """
-    return
+    omegar = _hourangle(jd,lon,timezone)
+    deltar = radians(declination(jd))
+    lambdar = radians(lat)
+    svx = -sin(omegar)*cos(deltar)
+    svy = sin(lambdar)*cos(omegar)*cos(deltar)-cos(lambdar)*sin(deltar)
+    svz = cos(lambdar)*cos(omegar)*cos(deltar)+sin(lambdar)*sin(deltar)
+    return (svx,svy,svz)
 
 def _hourangle(jd, longitude, timezone):
     """
