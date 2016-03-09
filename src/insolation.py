@@ -1,6 +1,6 @@
 from __future__ import division
 
-from math import radians, degrees, cos, sin, tan, exp,asin,floor
+from math import radians, degrees, cos, sin, tan, exp,asin,floor,pi
 
 
 def jday_from_datetime(year_or_datetime,month=None,day=None,hour=12,minute=0,sec=0):
@@ -60,10 +60,23 @@ def sunvector(jd,lat,lon,timezone=0):
     """
     return
 
-def hourangle(jd,longitude,timezone):
-    hour = ((jd-floor(jd))*24+12) % 24
+def _hourangle(jd, longitude, timezone):
+    """
+    internal function for solar position
 
-    return
+    >>> print round(_hourangle(2457457.16667,54,12),4)
+    -1.1971
+    >>> print round(_hourangle(2457457.16667,12,54),4)
+    -12.9257
+
+    """
+    hour = ((jd-floor(jd))*24+12) % 24
+    eqt = eqtime(jd)
+    stndmeridian = timezone*15
+    deltalontime = longitude-stndmeridian
+    deltalontime = deltalontime * 24.0/360.0
+    omegar = pi*( ( (hour + deltalontime + eqt/60)/12.0 ) - 1.0)
+    return omegar
 
 def eqtime(jd):
     """Computes the equation of time for a given Julian Day
