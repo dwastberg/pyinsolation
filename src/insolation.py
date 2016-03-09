@@ -1,4 +1,29 @@
+from __future__ import division
+
 from math import radians, cos, sin, exp
+
+
+def jday_from_datetime(year_or_datetime,month=None,day=None,hour=12,minute=0,sec=0):
+    """computes the Julian Day from from a date and time.  Valid for dates between 1901 and 2099
+
+    :param year_or_datetime: Either the year as an int or a python datetime object. If first argument is a python
+    datetime object, the rest of the arguments are ignored otherwise.
+    :param month: month of year as int in the range 1-12
+    :param day: day of the month
+    :param hour: hour of day
+    :param minute: minute
+    :param second: second
+    :return:  Julian day of the supplied date
+
+    >>> print round(jday_from_datetime(2000,1,1,12,0,0),4)
+    2451545.0
+    >>> print round(jday_from_datetime(2016,3,9,16,10,30),4)
+    2457457.1944
+    """
+    year=year_or_datetime
+    hour=hour+minute/60+sec/60
+    jd=367*year - (7*(year+(month+9)//12))//4 + (275*month)//9+day+1721013.5 + hour/24
+    return jd
 
 
 def insolation(zenith, jd, height, visibility, RH, tempK, O3, alphag):
