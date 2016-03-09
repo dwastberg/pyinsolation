@@ -19,8 +19,21 @@ def jday_from_datetime(year_or_datetime,month=None,day=None,hour=12,minute=0,sec
     2451545.0
     >>> print round(jday_from_datetime(2016,3,9,16,10,30),4)
     2457457.1944
+    >>> print round(jday_from_datetime(datetime.datetime(2016,3,9,16,10,30)),4)
+    2457457.1944
     """
-    year=year_or_datetime
+    try:
+        year=year_or_datetime.year
+        month=year_or_datetime.month
+        day=year_or_datetime.day
+        hour=year_or_datetime.hour
+        minute=year_or_datetime.minute
+        sec=year_or_datetime.second
+    except AttributeError:
+        year=year_or_datetime
+        if month is None or day is None:
+            raise ValueError("month and day must be set")
+
     hour=hour+minute/60+sec/60
     jd=367*year - (7*(year+(month+9)//12))//4 + (275*month)//9+day+1721013.5 + hour/24
     return jd
@@ -168,5 +181,7 @@ def sunr(jd):
 
 if __name__ == "__main__":
     import doctest
+    import datetime
+
 
     doctest.testmod()
