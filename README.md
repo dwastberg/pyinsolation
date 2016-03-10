@@ -13,6 +13,7 @@ or
 
 Find the sun's position at a given time and position on earth
 
+    #latitude and longitude in decimal degrees
     azimuth,zenith=sunposition(julianday,latitude,longitude,timezone=0)
 
 Calculate direct and diffuse irradiance
