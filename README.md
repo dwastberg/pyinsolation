@@ -4,6 +4,9 @@ insolation algorithm.  Includes helper functions for calculating julian days and
 Direct port of insolation and related function from the R insol package.  See
 http://www.meteoexploration.com/R/insol/index.html for references and more details
 
+Tested on python 2.7 and 3.5
+
+
 ## Usage
 
 Calculate Julian day of 15:30 on March 27th, 2016
