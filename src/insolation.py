@@ -1,9 +1,9 @@
 from __future__ import division
 
-from math import radians, degrees, cos, sin, tan,asin, acos,atan2, exp,floor,pi
+from math import radians, degrees, cos, sin, tan, asin, acos, atan2, exp, floor, pi
 
 
-def jday_from_datetime(year_or_datetime,month=None,day=None,hour=12,minute=0,sec=0):
+def jday_from_datetime(year_or_datetime, month=None, day=None, hour=12, minute=0, sec=0):
     """computes the Julian Day from from a date and time.  Valid for dates between 1901 and 2099
 
     :param year_or_datetime: Either the year as an int or a python datetime object. If first argument is a python
@@ -23,22 +23,23 @@ def jday_from_datetime(year_or_datetime,month=None,day=None,hour=12,minute=0,sec
     2457457.1944
     """
     try:
-        year=year_or_datetime.year
-        month=year_or_datetime.month
-        day=year_or_datetime.day
-        hour=year_or_datetime.hour
-        minute=year_or_datetime.minute
-        sec=year_or_datetime.second
+        year = year_or_datetime.year
+        month = year_or_datetime.month
+        day = year_or_datetime.day
+        hour = year_or_datetime.hour
+        minute = year_or_datetime.minute
+        sec = year_or_datetime.second
     except AttributeError:
-        year=year_or_datetime
+        year = year_or_datetime
         if month is None or day is None:
             raise ValueError("month and day must be set")
 
-    hour=hour+minute/60+sec/60
-    jd=367*year - (7*(year+(month+9)//12))//4 + (275*month)//9+day+1721013.5 + hour/24
+    hour = hour + minute / 60 + sec / 60
+    jd = 367 * year - (7 * (year + (month + 9) // 12)) // 4 + (275 * month) // 9 + day + 1721013.5 + hour / 24
     return jd
 
-def sunposition(jd,lat,lon,timezone=0):
+
+def sunposition(jd, lat, lon, timezone=0):
     """calculate the suns position in the sky at a given time and place. No refraction, center of disc
 
     :param jd: time in Julian days
@@ -52,14 +53,14 @@ def sunposition(jd,lat,lon,timezone=0):
     >>> print map(lambda x:round(x,4),sunposition(2452460,0,0,0))
     [2.5879, 22.8911]
     """
-    sunv=sunvector(jd,lat,lon,timezone)
-    azimuth = degrees(pi - atan2(sunv[0],sunv[1]  ) )
+    sunv = sunvector(jd, lat, lon, timezone)
+    azimuth = degrees(pi - atan2(sunv[0], sunv[1]))
     zenith = degrees(acos(sunv[2]))
 
-    return (azimuth,zenith)
+    return (azimuth, zenith)
 
 
-def sunvector(jd,lat,lon,timezone=0):
+def sunvector(jd, lat, lon, timezone=0):
     """Calculates a unit vector in the direction of the sun from the observer position.
     :param jd: time in Julian days
     :param lat: latitude in decimal degrees
@@ -72,13 +73,14 @@ def sunvector(jd,lat,lon,timezone=0):
     >>> print map(lambda x:round(x,4),sunvector(2457000,12,54,-8))
     [-0.0639, 0.1867, -0.9803]
     """
-    omegar = _hourangle(jd,lon,timezone)
+    omegar = _hourangle(jd, lon, timezone)
     deltar = radians(declination(jd))
     lambdar = radians(lat)
-    svx = -sin(omegar)*cos(deltar)
-    svy = sin(lambdar)*cos(omegar)*cos(deltar)-cos(lambdar)*sin(deltar)
-    svz = cos(lambdar)*cos(omegar)*cos(deltar)+sin(lambdar)*sin(deltar)
-    return (svx,svy,svz)
+    svx = -sin(omegar) * cos(deltar)
+    svy = sin(lambdar) * cos(omegar) * cos(deltar) - cos(lambdar) * sin(deltar)
+    svz = cos(lambdar) * cos(omegar) * cos(deltar) + sin(lambdar) * sin(deltar)
+    return (svx, svy, svz)
+
 
 def _hourangle(jd, longitude, timezone):
     """
@@ -90,13 +92,14 @@ def _hourangle(jd, longitude, timezone):
     -12.9257
 
     """
-    hour = ((jd-floor(jd))*24+12) % 24
+    hour = ((jd - floor(jd)) * 24 + 12) % 24
     eqt = eqtime(jd)
-    stndmeridian = timezone*15
-    deltalontime = longitude-stndmeridian
-    deltalontime = deltalontime * 24.0/360.0
-    omegar = pi*( ( (hour + deltalontime + eqt/60)/12.0 ) - 1.0)
+    stndmeridian = timezone * 15
+    deltalontime = longitude - stndmeridian
+    deltalontime = deltalontime * 24.0 / 360.0
+    omegar = pi * (((hour + deltalontime + eqt / 60) / 12.0) - 1.0)
     return omegar
+
 
 def eqtime(jd):
     """Computes the equation of time for a given Julian Day
@@ -106,20 +109,21 @@ def eqtime(jd):
     >>> print round(eqtime(2457457.16667),4)
     -10.3537
     """
-    jdc=(jd - 2451545.0)/36525.0
-    sec = 21.448 - jdc*(46.8150 + jdc*(0.00059 - jdc*(0.001813)))
-    e0 = 23.0 + (26.0 + (sec/60.0))/60.0
+    jdc = (jd - 2451545.0) / 36525.0
+    sec = 21.448 - jdc * (46.8150 + jdc * (0.00059 - jdc * (0.001813)))
+    e0 = 23.0 + (26.0 + (sec / 60.0)) / 60.0
     ecc = 0.016708634 - jdc * (0.000042037 + 0.0000001267 * jdc)
     oblcorr = e0 + 0.00256 * cos(radians(125.04 - 1934.136 * jdc))
-    y = (tan(radians(oblcorr)/2))**2
-    l0 = 280.46646 + jdc * (36000.76983 + jdc*(0.0003032))
-    l0 = (l0-360*(l0//360))%360
+    y = (tan(radians(oblcorr) / 2)) ** 2
+    l0 = 280.46646 + jdc * (36000.76983 + jdc * (0.0003032))
+    l0 = (l0 - 360 * (l0 // 360)) % 360
     rl0 = radians(l0)
     gmas = 357.52911 + jdc * (35999.05029 - 0.0001537 * jdc)
-    gmas=radians(gmas)
-    EqTime = y*sin(2*rl0)-2.0*ecc*sin(gmas)+4.0*ecc*y*sin(gmas)*cos(2*rl0)- \
-             0.5*y**2*sin(4*rl0)-1.25*ecc**2*sin(2*gmas)
-    return(degrees(EqTime)*4)
+    gmas = radians(gmas)
+    EqTime = y * sin(2 * rl0) - 2.0 * ecc * sin(gmas) + 4.0 * ecc * y * sin(gmas) * cos(2 * rl0) - \
+             0.5 * y ** 2 * sin(4 * rl0) - 1.25 * ecc ** 2 * sin(2 * gmas)
+    return (degrees(EqTime) * 4)
+
 
 def declination(jd):
     """Computes the declination of the Sun for a given Julian Day
@@ -130,20 +134,20 @@ def declination(jd):
     23.4333
     >>>
     """
-    jdc=(jd - 2451545.0)/36525.0
-    sec = 21.448 - jdc*(46.8150 + jdc*(0.00059 - jdc*(0.001813)))
-    e0 = 23.0 + (26.0 + (sec/60.0))/60.0
+    jdc = (jd - 2451545.0) / 36525.0
+    sec = 21.448 - jdc * (46.8150 + jdc * (0.00059 - jdc * (0.001813)))
+    e0 = 23.0 + (26.0 + (sec / 60.0)) / 60.0
     oblcorr = e0 + 0.00256 * cos(radians(125.04 - 1934.136 * jdc))
-    l0 = 280.46646 + jdc * (36000.76983 + jdc*(0.0003032))
-    l0 = (l0-360*(l0//360))%360
+    l0 = 280.46646 + jdc * (36000.76983 + jdc * (0.0003032))
+    l0 = (l0 - 360 * (l0 // 360)) % 360
     gmas = 357.52911 + jdc * (35999.05029 - 0.0001537 * jdc)
-    gmas=radians(gmas)
+    gmas = radians(gmas)
     seqcent = sin(gmas) * (1.914602 - jdc * (0.004817 + 0.000014 * jdc)) + \
-              sin(2*gmas) * (0.019993 - 0.000101 * jdc) + sin(3*gmas) * 0.000289
+              sin(2 * gmas) * (0.019993 - 0.000101 * jdc) + sin(3 * gmas) * 0.000289
     suntl = l0 + seqcent
     sal = suntl - 0.00569 - 0.00478 * sin(radians(125.04 - 1934.136 * jdc))
-    delta = asin( sin(radians(oblcorr))*sin(radians(sal)) )
-    return(degrees(delta))
+    delta = asin(sin(radians(oblcorr)) * sin(radians(sal)))
+    return (degrees(delta))
 
 
 def insolation(zenith, jd, height, visibility, RH, tempK, O3, alphag):
@@ -182,7 +186,7 @@ def insolation(zenith, jd, height, visibility, RH, tempK, O3, alphag):
     rho2 = sunr(jd)
     TauR = exp((-.09030 * (Ma ** 0.84)) * (1.0 + Ma - (Ma ** 1.01)))
     TauO = 1.0 - ((0.1611 * (O3 * Mr) * (1.0 + 139.48 * (O3 * Mr)) ** (-0.3035)) - 0.002715 * (O3 * Mr) * (
-    1.0 + 0.044 * (O3 * Mr) + 0.0003 * (O3 * Mr) ** 2) ** (-1))
+        1.0 + 0.044 * (O3 * Mr) + 0.0003 * (O3 * Mr) ** 2) ** (-1))
     TauG = exp(-0.0127 * (Ma ** 0.26))
     TauW = 1.0 - 2.4959 * (Wprec * Mr) * ((1.0 + 79.034 * (Wprec * Mr)) ** 0.6828 + 6.385 * (Wprec * Mr)) ** (-1)
     TauA = (0.97 - 1.265 * (visibility ** (-0.66))) ** (Ma ** 0.9)  # Machler, 1983
@@ -190,10 +194,10 @@ def insolation(zenith, jd, height, visibility, RH, tempK, O3, alphag):
     In = 0.9751 * (1 / rho2) * Isc * TauTotal
     tauaa = 1.0 - (1.0 - ssctalb) * (1.0 - Ma + Ma ** 1.06) * (1.0 - TauA)
     Idr = 0.79 * (1 / rho2) * Isc * cos(theta) * TauO * TauG * TauW * tauaa * 0.5 * (1.0 - TauR) / (
-    1.0 - Ma + Ma ** (1.02))
+        1.0 - Ma + Ma ** (1.02))
     tauas = (TauA) / tauaa
     Ida = 0.79 * (1 / rho2) * Isc * cos(theta) * TauO * TauG * TauW * tauaa * Fc * (1.0 - tauas) / (
-    1.0 - Ma + Ma ** 1.02)
+        1.0 - Ma + Ma ** 1.02)
     alpha_atmos = 0.0685 + (1.0 - Fc) * (1.0 - tauas)
     Idm = (In * cos(theta) + Idr + Ida) * alphag * alpha_atmos / (1.0 - alphag * alpha_atmos)
     Id = Idr + Ida + Idm
@@ -281,7 +285,7 @@ def sunr(jd):
     gmas = 357.52911 + jdc * (35999.05029 - 0.0001537 * jdc)
     gmasr = radians(gmas)
     seqc = sin(gmasr) * (1.914602 - jdc * (0.004817 + 0.000014 * jdc)) + sin(2 * gmas) * (
-    0.019993 - 0.000101 * jdc) + sin(3 * gmasr) * 0.000289
+        0.019993 - 0.000101 * jdc) + sin(3 * gmasr) * 0.000289
     sta = gmas + seqc
     sunrv = (1.000001018 * (1 - ecc ** 2)) / (1 + ecc * cos(radians(sta)))
     return sunrv
@@ -290,6 +294,5 @@ def sunr(jd):
 if __name__ == "__main__":
     import doctest
     import datetime
-
 
     doctest.testmod()
