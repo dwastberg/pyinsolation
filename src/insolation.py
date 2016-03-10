@@ -1,4 +1,6 @@
 from __future__ import division
+from __future__ import print_function
+
 
 from math import radians, degrees, cos, sin, tan, asin, acos, atan2, exp, floor, pi
 
@@ -15,11 +17,11 @@ def jday_from_datetime(year_or_datetime, month=None, day=None, hour=12, minute=0
     :param second: second
     :return:  Julian day of the supplied date
 
-    >>> print round(jday_from_datetime(2000,1,1,12,0,0),4)
+    >>> print(round(jday_from_datetime(2000,1,1,12,0,0),4))
     2451545.0
-    >>> print round(jday_from_datetime(2016,3,9,16,10,30),4)
+    >>> print(round(jday_from_datetime(2016,3,9,16,10,30),4))
     2457457.1944
-    >>> print round(jday_from_datetime(datetime.datetime(2016,3,9,16,10,30)),4)
+    >>> print(round(jday_from_datetime(datetime.datetime(2016,3,9,16,10,30)),4))
     2457457.1944
     """
     try:
@@ -48,9 +50,9 @@ def sunposition(jd, lat, lon, timezone=0):
     :param timezone: Time zone, west is negative.
     :return: azimuth and zenith angles of the sun at the given time and place
 
-    >>> print map(lambda x:round(x,4),sunposition(2457457.16667,54,12,1))
+    >>> list(map(lambda x:round(x,4),sunposition(2457457.16667,54,12,1)))
     [237.7328, 73.5839]
-    >>> print map(lambda x:round(x,4),sunposition(2452460,0,0,0))
+    >>> list(map(lambda x:round(x,4),sunposition(2452460,0,0,0)))
     [2.5879, 22.8911]
     """
     sunv = sunvector(jd, lat, lon, timezone)
@@ -68,9 +70,9 @@ def sunvector(jd, lat, lon, timezone=0):
     :param timezone: Time zone, west is negative.
     :return: unit vector in the direction of the sun from the observer position
 
-    >>> print map(lambda x:round(x,4),sunvector(2457457.16667,54,12,1))
+    >>> list(map(lambda x:round(x,4),sunvector(2457457.16667,54,12,1)))
     [-0.8111, 0.5121, 0.2826]
-    >>> print map(lambda x:round(x,4),sunvector(2457000,12,54,-8))
+    >>> list(map(lambda x:round(x,4),sunvector(2457000,12,54,-8)))
     [-0.0639, 0.1867, -0.9803]
     """
     omegar = _hourangle(jd, lon, timezone)
@@ -86,9 +88,9 @@ def _hourangle(jd, longitude, timezone):
     """
     internal function for solar position
 
-    >>> print round(_hourangle(2457457.16667,54,12),4)
+    >>> print(round(_hourangle(2457457.16667,54,12),4))
     -1.1971
-    >>> print round(_hourangle(2457457.16667,12,54),4)
+    >>> print(round(_hourangle(2457457.16667,12,54),4))
     -12.9257
 
     """
@@ -104,9 +106,9 @@ def _hourangle(jd, longitude, timezone):
 def eqtime(jd):
     """Computes the equation of time for a given Julian Day
 
-    >>> print round(eqtime(2457561.06944),4)
+    >>> print(round(eqtime(2457561.06944),4))
     -1.9076
-    >>> print round(eqtime(2457457.16667),4)
+    >>> print(round(eqtime(2457457.16667),4))
     -10.3537
     """
     jdc = (jd - 2451545.0) / 36525.0
@@ -128,9 +130,9 @@ def eqtime(jd):
 def declination(jd):
     """Computes the declination of the Sun for a given Julian Day
 
-    >>> print round(declination(2457457.16667),4)
+    >>> print(round(declination(2457457.16667),4))
     -4.1502
-    >>> print round(declination(2457561.06944),4)
+    >>> print(round(declination(2457561.06944),4))
     23.4333
     >>>
     """
@@ -165,9 +167,9 @@ def insolation(zenith, jd, height, visibility, RH, tempK, O3, alphag):
     :param alphag: Albedo of the surrounding terrain [0 to 1].
     :return: [Direct irradiance, Diffuse irradiance]
 
-    >>> print map(lambda f: round(f,4),insolation(30,0,3200,28,60,278.15,0.02,0.2))
+    >>> list(map(lambda f: round(f,4),insolation(30,0,3200,28,60,278.15,0.02,0.2)))
     [952.9052, 134.0539]
-    >>> print map(lambda f: round(f,4),insolation(0,0,0,10,20,278.15,0.1,0.5))
+    >>> list(map(lambda f: round(f,4),insolation(0,0,0,10,20,278.15,0.1,0.5)))
     [771.9925, 333.1886]
 
     """
@@ -215,9 +217,9 @@ def z2p(z, P0=101325, T0=288.15):
 
     >>> z2p(0)
     1013.25
-    >>> print round(z2p(1000),4)
+    >>> print(round(z2p(1000),4))
     898.7592
-    >>> print round(z2p(20,100000,250),4)
+    >>> print(round(z2p(20,100000,250),4))
     997.2699
 
     """
@@ -242,9 +244,9 @@ def wvapsat(tempk, ice=False):
     :param ice: Over ice or water [True,False]
     :return: Partial pressure of water vapour [hPa].
 
-    >>> print round(wvapsat(273),4)
+    >>> print(round(wvapsat(273),4))
     6.0371
-    >>> print round(wvapsat(300),4)
+    >>> print(round(wvapsat(300),4))
     35.3136
     """
     if ice:
@@ -275,9 +277,9 @@ def sunr(jd):
     :param jd: Julian Day
     :return: Earth Radius Vector in Astronomical Units (AU)
 
-    >>> print round(sunr(0),4)
+    >>> print(round(sunr(0),4))
     0.9949
-    >>> print round(sunr(10000),4)
+    >>> print(round(sunr(10000),4))
     1.0166
     """
     jdc = (jd - 2451545.0) / 36525.0
