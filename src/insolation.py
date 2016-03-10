@@ -159,6 +159,7 @@ def insolation(zenith, jd, height, visibility, RH, tempK, O3, alphag):
     :param tempK: Air temperature [K].
     :param O3: Ozone thickness [m].
     :param alphag: Albedo of the surrounding terrain [0 to 1].
+    :return: [Direct irradiance, Diffuse irradiance]
 
     >>> print map(lambda f: round(f,4),insolation(30,0,3200,28,60,278.15,0.02,0.2))
     [952.9052, 134.0539]
